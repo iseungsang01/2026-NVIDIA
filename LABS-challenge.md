@@ -22,11 +22,11 @@ This challenge is divided into four milestones, all of which are graded componen
 
 In this challenge, you will mimic a real-world R&D pipeline, moving from rapid prototyping to high-performance deployment. You will utilize two distinct platforms, each chosen for a specific phase of your development lifecycle:
 
-* **Phase 1 (Prototyping): .**
-    For the "Ramp Up" and initial CPU validation, you will work in ****. This is your "Dev Environment"—a zero-setup, pre-configured cudaq sandbox that allows you to focus entirely on mastering the algorithm and logic without worrying about infrastructure overhead.
+* **Phase 1 (Prototyping): qbraid**
+    For the "Ramp Up" and initial CPU validation, you will work on Milestones 1 and 2 in qbraid. This is your "Dev Environment"—a zero-setup, pre-configured cudaq sandbox that allows you to focus entirely on mastering the algorithm and logic without worrying about infrastructure overhead.
 
 * **Phase 2 (Acceleration): Brev.dev.**
-    Once your logic is validated, you will "graduate" your code to **Brev.dev**. This is your "Compute Cluster." Brev provides on-demand access to a wide variety of NVIDIA GPU architectures (L4s, T4s, A100s, ...). You will use this platform to benchmark your solution across different hardware configurations and unlock full GPU acceleration.
+    Once your logic is validated, you will "graduate" your code to **Brev.dev** to complete Milestone 3 and 4. Brev provides on-demand access to a wide variety of NVIDIA GPU architectures (L4s, T4s, A100s, ...). You will use this platform to test your solution across different hardware configurations and unlock full GPU acceleration.
 
 ---
 
