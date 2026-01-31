@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD)
 
-**Project Name:** [e.g., LABS-Solv-V1]
-**Team Name:** 3kingdoms
+**Project Name:** [e.g., LABS-Solv-V1]  
+**Team Name:** 3kingdoms  
 **GitHub Repository:** [[Insert Link Here]](https://github.com/iseungsang01/2026-NVIDIA)
 
 ---
@@ -17,10 +17,10 @@
 
 | Role | Name | GitHub Handle | Discord Handle
 | :--- | :--- | :--- | :--- |
-| **Project Lead** (Architect) | [Seung Sang, Lee] | [@handle] | [@iseungsang] |
-| **GPU Acceleration PIC** (Builder) | [Seung Sang, Lee] | [@handle] | [@iseungsang] |
-| **Quality Assurance PIC** (Verifier) | [Derek, kim] | [@gimgwanu3753] | [@handle] |
-| **Technical Marketing PIC** (Storyteller) | [jamesjoshuahamburgerhyeon] | [@jamesjoshuahamburgerhyeon] | [@handle] |
+| **Project Lead** (Manager) | [Seung Sang, Lee] | [@iseungsang01] | [@iseungsang] |
+| **GPU Acceleration PIC** (Builder) | [Seung Sang, Lee] | [@iseungsang01] | [@iseungsang] |
+| **Quality Assurance PIC** (Architect, Verifier) | [Derek, kim] | [@gimgwanu3753] | [@handle] |
+| **Technical Marketing PIC** (Architect, Storyteller) | [jamesjoshuahamburgerhyeon] | [@jamesjoshuahamburgerhyeon] | [@handle] |
 
 ---
 
