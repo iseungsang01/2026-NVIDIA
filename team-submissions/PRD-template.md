@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD)
 
-**Project Name:** LABS-Solv-V1
-**Team Name:** 3kingdoms
+**Project Name:** LABS-Solv-V1  
+**Team Name:** 3kingdoms  
 **GitHub Repository:** [Link](https://github.com/iseungsang01/2026-NVIDIA)
 
 ---
