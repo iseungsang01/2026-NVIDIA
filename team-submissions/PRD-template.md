@@ -1,8 +1,8 @@
 # Product Requirements Document (PRD)
 
 **Project Name:** [e.g., LABS-Solv-V1]
-**Team Name:** [e.g., QuantumVibes]
-**GitHub Repository:** [Insert Link Here]
+**Team Name:** 3kingdoms
+**GitHub Repository:** [[Insert Link Here]](https://github.com/iseungsang01/2026-NVIDIA)
 
 ---
 
