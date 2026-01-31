@@ -17,10 +17,10 @@
 
 | Role | Name | GitHub Handle | Discord Handle
 | :--- | :--- | :--- | :--- |
-| **Project Lead** (Architect) | [Seung Sang, Lee] | [@handle] | [@handle] |
-| **GPU Acceleration PIC** (Builder) | [Seung Sang, Lee] | [@handle] | [@handle] |
-| **Quality Assurance PIC** (Verifier) | [Derek, kim] | [@handle] | [@handle] |
-| **Technical Marketing PIC** (Storyteller) | [jamesjoshuahamburgerhyeon] | [@handle] | [@handle] |
+| **Project Lead** (Architect) | [Seung Sang, Lee] | [@handle] | [@iseungsang] |
+| **GPU Acceleration PIC** (Builder) | [Seung Sang, Lee] | [@handle] | [@iseungsang] |
+| **Quality Assurance PIC** (Verifier) | [Derek, kim] | [@gimgwanu3753] | [@handle] |
+| **Technical Marketing PIC** (Storyteller) | [jamesjoshuahamburgerhyeon] | [@jamesjoshuahamburgerhyeon] | [@handle] |
 
 ---
 
