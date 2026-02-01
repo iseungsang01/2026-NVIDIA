@@ -23,6 +23,9 @@
 
 ---
 
+# We also submit  - Addendum: Items to Strengthen Milestone 2 PRD Quality - below!
+
+
 # 2. The Architecture
 
 ## Choice of Quantum Algorithm
