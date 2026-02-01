@@ -178,3 +178,100 @@ GPU usage is tightly controlled:
 
 This ensures that computational resources are spent on validated experiments rather than debugging cycles.
 
+# Addendum: Items to Strengthen Milestone 2 PRD Quality
+
+## A. Architecture Extensions (Risk-Taking Justification)
+
+### A.1 Explicit Algorithmic Alternatives and Rejection Rationale
+To demonstrate conscious scientific risk-taking, we explicitly considered and rejected the following alternatives:
+
+- **VQE (Variational Quantum Eigensolver)**  
+  Rejected due to:
+  - Lack of structured alternating operators aligned with LABS autocorrelation physics.
+  - Increased susceptibility to barren plateaus when optimizing general ansätze with many 4-body terms.
+
+- **ADAPT-QAOA**  
+  Considered but deferred due to:
+  - Operator pool explosion caused by dense 4-body Z interactions.
+  - Overhead of iterative operator selection outweighing benefits at target system sizes.
+
+- **Quantum Annealing / Classical Ising Solvers**  
+  Rejected because:
+  - Higher-order (4-body) interactions require nontrivial gadgetization, obscuring physical interpretability.
+  - Our goal emphasizes algorithmic transparency over raw solution quality.
+
+This establishes QAOA not as a conservative default, but as a deliberate choice balancing expressivity and controllability.
+
+---
+
+## B. Acceleration Plan (Concrete GPU Strategy)
+
+### B.1 GPU Memory Model
+We explicitly model GPU memory usage as:
+- Statevector size: \( 2^n \times 16 \) bytes (complex128)
+- Maximum feasible qubits on L4 (24 GB VRAM):  
+  \( n \leq 30 \) (with safety margin for batching and sampling)
+
+### B.2 Parallelization Strategy
+We employ **parameter-parallel execution** rather than shot-parallel execution:
+- Each GPU kernel evaluates independent \((\gamma, \beta)\) parameter sets.
+- Shot noise is controlled by moderate shot counts, amortized across batches.
+
+This choice prioritizes optimization throughput over single-point estimator precision.
+
+### B.3 Hard Resource Limits
+To prevent uncontrolled GPU usage:
+- Maximum qubits: fixed per experiment
+- Maximum batch size: derived from VRAM headroom
+- Automatic fallback to CPU if memory thresholds are exceeded
+
+---
+
+## C. Verification Extensions (Physical & Algorithmic Sanity Checks)
+
+### C.1 QAOA-Specific Sanity Checks
+In addition to symmetry checks:
+- **Zero-parameter limit:**  
+  Verify that \(\gamma = 0, \beta = 0\) yields a uniform energy expectation.
+- **Shot convergence test:**  
+  Confirm expectation values converge within tolerance as shot count increases.
+- **Parameter locality test:**  
+  Small perturbations in \((\gamma, \beta)\) must produce bounded energy changes.
+
+### C.2 Noise Sensitivity Checks
+We explicitly test:
+- Energy variance scaling with shot count.
+- Stability of the optimizer under injected sampling noise.
+
+These checks ensure observed performance is algorithmic rather than stochastic.
+
+---
+
+## D. Quantified Success Metrics (Acceptance Criteria)
+
+### D.1 Approximation Targets
+- For \( N \leq 30 \):  
+  Achieve energies within **5% of known optima**.
+- Demonstrate monotonic improvement with increasing QAOA depth \( p \leq 3 \).
+
+### D.2 Performance Targets
+- Achieve **≥ 3× wall-clock speedup** compared to CPU-only simulation.
+- Ensure classical post-processing remains < 30% of total runtime.
+
+### D.3 Failure Criteria (Explicit)
+We define failure modes explicitly:
+- No improvement over random sampling baseline.
+- Optimization collapse due to parameter concentration.
+- Runtime dominated by classical energy evaluation.
+
+Failure is treated as a scientific result, not an implementation defect.
+
+---
+
+## E. Research Value Framing
+Regardless of final performance, this project aims to:
+- Characterize QAOA behavior on dense, non-graph, higher-order Hamiltonians.
+- Identify scaling limits and optimization pathologies.
+- Provide negative or null results with controlled experimental evidence.
+
+This reframes risk as knowledge generation rather than benchmark chasing.
