@@ -23,90 +23,158 @@
 
 ---
 
-## 2. The Architecture
-**Owner:** Project Lead
+# 2. The Architecture
 
-### Choice of Quantum Algorithm
-* **Algorithm:** [Identify the specific algorithm or ansatz]
-    * *Example:* "Quantum Approximate Optimization Algorithm (QAOA) with a hardware-efficient ansatz."
-    * *Example:* "Variational Quantum Eigensolver (VQE) using a custom warm-start initialization."
+## Choice of Quantum Algorithm
 
-* **Motivation:** [Why this algorithm? Connect it to the problem structure or learning goals.]
-    * *Example (Metric-driven):* "We chose QAOA because we believe the layer depth corresponds well to the correlation length of the LABS sequences."
-    *  Example (Skills-driven):* "We selected VQE to maximize skill transfer. Our senior members want to test a novel 'warm-start' adaptation, while the standard implementation provides an accessible ramp-up for our members new to quantum variational methods."
-   
+### Algorithm
+**Quantum Approximate Optimization Algorithm (QAOA)** with a standard X-mixer and a LABS-specific cost Hamiltonian composed of 2-body and 4-body Pauli-Z interactions.
 
-### Literature Review
-* **Reference:** [Title, Author, Link]
-* **Relevance:** [How does this paper support your plan?]
-    * *Example:* "Reference: 'QAOA for MaxCut.' Relevance: Although LABS is different from MaxCut, this paper demonstrates how parameter concentration can speed up optimization, which we hope to replicate."
+### Motivation
+The LABS problem is a highly nonlocal combinatorial optimization problem where the objective function depends on long-range autocorrelations of a binary sequence. QAOA is a natural fit for this structure for the following reasons:
 
+1. **Direct Hamiltonian Encoding**  
+   The LABS objective can be exactly rewritten as a diagonal Ising Hamiltonian consisting of 2-body and 4-body \( Z \)-type interactions. QAOA allows direct exponentiation of this Hamiltonian without relaxation or penalty terms.
 
-Bernasconi, J. Low autocorrelation binary sequences, J. Physique (1987)
+2. **Progressive Correlation Capture**  
+   Each QAOA layer increases the effective correlation length of the quantum state. This aligns well with LABS, where minimizing long-range correlations is the dominant difficulty rather than enforcing local constraints.
 
-Hadfield et al., From the Quantum Approximate Optimization Algorithm to a Quantum Alternating Operator Ansatz, arXiv:1709.03489
+3. **Continuous Optimization of a Discrete Problem**  
+   QAOA embeds the discrete LABS landscape into a continuous parameter space \((\gamma, \beta)\), enabling structured exploration via classical optimizers instead of brute-force bit flips.
 
-Zhou et al., Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation, PRX (2020)
-https://journals.aps.org/prx/abstract/10.1103/PhysRevX.10.021067
-
+4. **Benchmark Transparency**  
+   QAOA has well-characterized behavior and known limitations. This makes it suitable not only as a solver but also as a diagnostic tool for understanding how quantum variational algorithms behave on sequence optimization problems.
 
 ---
 
-## 3. The Acceleration Strategy
-**Owner:** GPU Acceleration PIC
+## Literature Review
 
-### Quantum Acceleration (CUDA-Q)
-* **Strategy:** [How will you use the GPU for the quantum part?]
-    * *Example:* "After testing with a single L4, we will target the `nvidia-mgpu` backend to distribute the circuit simulation across multiple L4s for large $N$."
- 
+### Bernasconi (1987): *Low Autocorrelation Binary Sequences*
+- **Relevance:**  
+  This paper defines the LABS problem and its canonical energy function. All correctness checks, benchmarks, and target energies in this project are derived directly from this formulation.
 
-### Classical Acceleration (MTS)
-* **Strategy:** [The classical search has many opportuntities for GPU acceleration. What will you chose to do?]
-    * *Example:* "The standard MTS evaluates neighbors one by one. We will use `cupy` to rewrite the energy function to evaluate a batch of 1,000 neighbor flips simultaneously on the GPU."
+### Hadfield et al. (2017): *From QAOA to the Quantum Alternating Operator Ansatz*
+- **Relevance:**  
+  This work generalizes QAOA beyond graph problems and provides the theoretical foundation for applying alternating-operator methods to problems like LABS that lack an underlying graph structure.
 
-### Hardware Targets
-* **Dev Environment:** [e.g., Qbraid (CPU) for logic, Brev L4 for initial GPU testing]
-* **Production Environment:** [e.g., Brev A100-80GB for final N=50 benchmarks]
+### Zhou et al. (2020): *Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation*
+- **Relevance:**  
+  This paper analyzes parameter concentration, optimization landscapes, and depth scaling in QAOA. These results inform our choice of shallow circuit depth, gradient-free optimizers, and realistic expectations for convergence under shot noise.
 
 ---
 
-## 4. The Verification Plan
-**Owner:** Quality Assurance PIC
+# 3. The Acceleration Strategy
 
-### Unit Testing Strategy
-* **Framework:** [e.g., `pytest`, `unittest`]
-* **AI Hallucination Guardrails:** [How do you know the AI code is right?]
-    * *Example:* "We will require AI-generated kernels to pass a 'property test' (Hypothesis library) ensuring outputs are always within theoretical energy bounds before they are integrated."
+## Quantum Acceleration (CUDA-Q)
 
-### Core Correctness Checks
-* **Check 1 (Symmetry):** [Describe a specific physics check]
-    * *Example:* "LABS sequence $S$ and its negation $-S$ must have identical energies. We will assert `energy(S) == energy(-S)`."
-* **Check 2 (Ground Truth):**
-    * *Example:* "For $N=3$, the known optimal energy is 1.0. Our test suite will assert that our GPU kernel returns exactly 1.0 for the sequence `[1, 1, -1]`."
+### Strategy
+We will use **CUDA-Q on NVIDIA L4 GPUs** to accelerate classical simulation of quantum circuits.
 
----
+The motivation is throughput rather than hardware realism:
+- QAOA requires repeated circuit evaluations during parameter optimization.
+- LABS circuits contain many multi-body interactions, increasing gate depth.
+- Shot-based expectation estimation introduces additional sampling overhead.
 
-## 5. Execution Strategy & Success Metrics
-**Owner:** Technical Marketing PIC
-
-### Agentic Workflow
-* **Plan:** [How will you orchestrate your tools?]
-    * *Example:* "We are using Cursor as the IDE. We have created a `skills.md` file containing the CUDA-Q documentation so the agent doesn't hallucinate API calls. The QA Lead runs the tests, and if they fail, pastes the error log back into the Agent to refactor."
-
-### Success Metrics
-* **Metric 1 (Approximation):** [e.g., Target Ratio > 0.9 for N=30]
-* **Metric 2 (Speedup):** [e.g., 10x speedup over the CPU-only Tutorial baseline]
-* **Metric 3 (Scale):** [e.g., Successfully run a simulation for N=40]
-
-### Visualization Plan
-* **Plot 1:** [e.g., "Time-to-Solution vs. Problem Size (N)" comparing CPU vs. GPU]
-* **Plot 2:** [e.g., "Convergence Rate" (Energy vs. Iteration count) for the Quantum Seed vs. Random Seed]
+CUDA-Q enables parallel state evolution and sampling on the L4 GPU, significantly reducing wall-clock time per objective evaluation. This allows rapid iteration over QAOA parameters and circuit variants.
 
 ---
 
-## 6. Resource Management Plan
-**Owner:** GPU Acceleration PIC 
+## Classical Acceleration (MTS)
 
-* **Plan:** [How will you avoid burning all your credits?]
-    * *Example:* "We will develop entirely on Qbraid (CPU) until the unit tests pass. We will then spin up a cheap L4 instance on Brev for porting. We will only spin up the expensive A100 instance for the final 2 hours of benchmarking."
-    * *Example:* "The GPU Acceleration PIC is responsible for manually shutting down the Brev instance whenever the team takes a meal break."
+### Strategy
+The classical LABS energy evaluation involves nested summations over sequence shifts and indices, which becomes a bottleneck during optimization and verification.
+
+We accelerate the classical side by:
+- Vectorizing autocorrelation computations.
+- Evaluating batches of candidate sequences in parallel.
+- Offloading these computations to the GPU where appropriate.
+
+This hybrid approach ensures that classical post-processing does not dominate the overall runtime.
+
+---
+
+## Hardware Targets
+
+- **Development Environment:**  
+  CPU-only execution for correctness validation, unit testing, and debugging.
+
+- **Production Environment:**  
+  NVIDIA L4 GPU for QAOA circuit simulation and batched classical energy evaluation.
+
+This staged approach balances cost efficiency with performance.
+
+---
+
+# 4. The Verification Plan
+
+## Unit Testing Strategy
+
+### Framework
+Standard Python testing frameworks (e.g., `pytest`) are used to validate correctness deterministically.
+
+### AI Hallucination Guardrails
+AI-generated code is treated as untrusted until it satisfies strict invariants:
+- Property-based tests enforce theoretical bounds and symmetries.
+- Results are cross-checked against brute-force solutions for small \( N \).
+- Quantum sampling is always validated using an independent classical energy function.
+
+---
+
+## Core Correctness Checks
+
+### Check 1: Symmetry
+The LABS energy is invariant under global sign inversion:
+\[
+E(S) = E(-S)
+\]
+Any violation indicates an incorrect Ising mapping or sign convention.
+
+### Check 2: Ground Truth
+For small \( N \), exact optimal energies are known. The implementation must reproduce these values exactly before being used for larger instances.
+
+---
+
+# 5. Execution Strategy & Success Metrics
+
+## Agentic Workflow
+
+### Plan
+The workflow separates generation, verification, and refactoring:
+1. Code is generated or modified.
+2. Unit and property tests are executed.
+3. Failures are analyzed and fed back into the refinement loop.
+
+Local documentation and API references are provided to the agent to prevent hallucinated interfaces.
+
+---
+
+## Success Metrics
+
+- **Approximation Quality:**  
+  Achieve energies close to known optima as circuit depth increases.
+- **Speedup:**  
+  Demonstrate meaningful runtime reduction compared to CPU-only baselines.
+- **Scale:**  
+  Successfully simulate and optimize LABS instances beyond trivial sizes.
+
+---
+
+## Visualization Plan
+
+- **Time-to-Solution vs. N:**  
+  Comparing CPU-only and L4-accelerated execution.
+- **Energy vs. Iteration Count:**  
+  Showing convergence behavior during QAOA optimization.
+
+---
+
+# 6. Resource Management Plan
+
+## Plan
+GPU usage is tightly controlled:
+- All logic and verification are completed on CPU.
+- The L4 GPU is used only after correctness is established.
+- Long-running jobs are scheduled intentionally to avoid idle GPU time.
+
+This ensures that computational resources are spent on validated experiments rather than debugging cycles.
+
