@@ -41,6 +41,15 @@
 * **Relevance:** [How does this paper support your plan?]
     * *Example:* "Reference: 'QAOA for MaxCut.' Relevance: Although LABS is different from MaxCut, this paper demonstrates how parameter concentration can speed up optimization, which we hope to replicate."
 
+
+Bernasconi, J. Low autocorrelation binary sequences, J. Physique (1987)
+
+Hadfield et al., From the Quantum Approximate Optimization Algorithm to a Quantum Alternating Operator Ansatz, arXiv:1709.03489
+
+Zhou et al., Quantum Approximate Optimization Algorithm: Performance, Mechanism, and Implementation, PRX (2020)
+https://journals.aps.org/prx/abstract/10.1103/PhysRevX.10.021067
+
+
 ---
 
 ## 3. The Acceleration Strategy
